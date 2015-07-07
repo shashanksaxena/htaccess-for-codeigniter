@@ -1,0 +1,73 @@
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Credentials true
+    Header set Access-Control-Allow-Headers: Content-Type
+</IfModule>
+<IfModule mod_rewrite.c>
+# Turn on URL rewriting
+RewriteEngine On
+
+RewriteCond %{THE_REQUEST} ^[^/]*/index\.php [NC]
+RewriteRule ^index\.php(.+) $1 [R=301,L]
+#temporary redirect to corresponding url without index.php
+
+
+# If your website begins from a folder e.g localhost/my_project then 
+# you have to change it to: RewriteBase /my_project/
+# If your site begins from the root e.g. example.local/ then
+# let it as it is
+RewriteBase /
+
+# Protect application and system files from being viewed when the index.php is missing
+RewriteCond $1 ^(application|system|private|logs)
+
+# Rewrite to index.php/access_denied/URL
+RewriteRule ^(.*)$ index.php/access_denied/$1 [PT,L]
+
+# Allow these directories and files to be displayed directly:
+RewriteCond $1 ^(index\.php|robots\.txt|favicon\.ico|public|assets|campaign|downloads|eSAC_brochure.pdf|font|css|paytm|exam|beta-test|js|uploads|esac-admin|images|components|admin\.php|admin\.php|recruitments_mail\.php|customerregjson_mail\.php|franchisejson_mail\.php|exam-campaign|subscribe_mail\.php|subscribejson_mail\.php|application_mail\.php|bookenquiry\.php|director_mail\.php|freshbatchmail\.php|franchise_mail\.php|exam_json\.php|freshbatchjson_mail\.php|confirmjson_mail\.php|login_mail\.php|students|planning_mail\.php|recruiters_mail\.php|recruitersjson_mail\.php|hireus_mail-mobile\.php|quickenquiry\.php|feedback_mail-mobile\.php|feedback_mail\.php|feedbackjson_mail\.php|paymentsuccess\.php|bookenquiryjson\.php|planningjson_mail\.php|enquirymail-mobile\.php|timthumb\.php|get_call_mail\.php|applynow_mail-mobile\.php|score_mail\.php|loginnow\.php|inner\.html|subscription_email\.php|sitemap\.xml|google7e523d590a710329\.html|test|refer\.html|internship|student|newsletter|referral|smtp)
+
+# No rewriting
+RewriteRule ^(.*)$ - [PT,L]
+
+# Rewrite to index.php/URL
+RewriteRule ^(.*)$ index.php/$1 [PT,L]
+</IfModule>
+Options -Indexes
+
+  
+ AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/xml
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/x-javascript
+
+
+
+# Turn on Expires and set default to 0
+ExpiresActive On
+ExpiresDefault A0
+
+# Set up caching on media files for 1 week
+<FilesMatch "\.(gif|jpg|jpeg|png)$">
+  ExpiresDefault A604800
+  Header append Cache-Control "public"
+</FilesMatch>
+
+# Set up 1 week caching on javascript and CSS
+<FilesMatch "\.(js|css)$">
+  ExpiresDefault A604800
+  Header append Cache-Control "proxy-revalidate"
+  SetOutputFilter DEFLATE
+</FilesMatch>
+
+# Force no caching for dynamic files
+<FilesMatch "\.(php)$">
+  ExpiresActive Off
+  Header set Cache-Control "private, no-cache, no-store, proxy-revalidate, no-transform"
+  Header set Pragma "no-cache"
+</FilesMatch>
